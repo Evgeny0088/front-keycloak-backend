@@ -1,0 +1,8 @@
+{{- if not (lookup "v1" "Namespace" "" "keycloak-ns") }}
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: {{ .Values.global.keycloakNs }}
+    annotations:
+        "helm.sh/resource-policy": keep
+{{- end -}}

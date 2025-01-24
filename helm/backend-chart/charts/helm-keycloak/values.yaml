@@ -1,0 +1,97 @@
+keycloak:
+    name: keycloak
+    image: quay.io/keycloak/keycloak:26.0.7
+    secretName: keycloak-secret
+    pullPolicy: IfNotPresent
+    keycloakAdmin: admin
+    keycloakAdminPassword: password
+    replicaCount: 3
+
+postgres:
+  name: keycloak-db
+  image: ghcr.io/cloudnative-pg/postgresql:16.0
+  replicaCount: 1
+  storage: 1Gi
+  dbSecret: keycloak-db-secret
+  keycloakDBPassword: ""
+  keycloakDBOwner: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  clusterRoleName: keycloak-role
+  clusterRoleBindingName: keycloak-role-binding
+  name: keycloak-sa
+
+configMap:
+  name: keycloak-config-map
+  envs:
+    KC_HEALTH_ENABLED: true
+    KC_METRICS_ENABLED: true
+    KC_HOSTNAME_STRICT_HTTPS: true
+    KC_PROXY_HEADERS: xforwarded
+    KC_HTTP_ENABLED: true
+    KC_HOSTNAME: front-keycloak.com
+    KC_LOG_LEVEL: INFO
+    KC_DB: postgres
+    KC_DB_URL: jdbc:postgresql://keycloak-db-rw.keycloak-ns:5432/keycloak-db
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+   runAsNonRoot: true
+   runAsUser: 1000
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 9000
+  initialDelaySeconds: 60
+
+readinessProbe:
+  httpGet:
+    scheme: HTTPS
+    path: /health/ready
+    port: 9000
+  initialDelaySeconds: 90
+
+service:
+  name: keycloak-service
+  type: ClusterIP
+  port: 443
+
+ingress:
+  enabled: true
+  secretName: keycloak-cert-ca-secret
+  className: nginx
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+   limits:
+     cpu: 700m
+     memory: 1Gi
+   requests:
+     cpu: 300m
+     memory: 450Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

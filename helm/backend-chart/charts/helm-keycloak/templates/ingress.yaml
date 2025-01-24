@@ -1,0 +1,26 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.keycloak.name }}-ingress
+  namespace: {{ .Values.global.keycloakNs }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - hosts:
+      - {{ .Values.configMap.envs.KC_HOSTNAME }}
+      secretName: {{ .Values.ingress.secretName }}
+  rules:
+    - host: {{ .Values.configMap.envs.KC_HOSTNAME }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.service.name }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end -}}

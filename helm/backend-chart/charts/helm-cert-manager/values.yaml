@@ -1,0 +1,5 @@
+createCertManager: true
+rootIssuer: root-issuer
+caSecretName: root-ca-secret
+commonName: front.keycloak
+caIssuerName: keycloak-certificate-issuer

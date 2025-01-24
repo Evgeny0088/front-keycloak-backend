@@ -1,0 +1,14 @@
+postgres:
+  name: users-db
+  image: ghcr.io/cloudnative-pg/postgresql:16.0
+  replicaCount: 1
+  storage: 1Gi
+  dbSecret: users-db-secret
+  dbPassword: ""
+  dbOwner: ""
+
+configMap:
+  name: users-db-config-map
+  namespace: users-db-ns
+  envs:
+    KC_DB_URL: jdbc:postgresql://users-db-rw.users-db-ns:5432/users-db

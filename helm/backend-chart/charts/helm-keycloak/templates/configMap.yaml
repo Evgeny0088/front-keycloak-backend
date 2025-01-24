@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.configMap.name }}
+    namespace: {{ .Values.global.keycloakNs }}
+data:
+    KC_HOSTNAME: {{ .Values.configMap.envs.KC_HOSTNAME | quote }}
+    KC_METRICS_ENABLED: {{ .Values.configMap.envs.KC_METRICS_ENABLED | quote }}
+    KC_HEALTH_ENABLED: {{ .Values.configMap.envs.KC_HEALTH_ENABLED | quote }}
+    KC_PROXY_HEADERS: {{ .Values.configMap.envs.KC_PROXY_HEADERS | quote }}
+    KC_HTTP_ENABLED: {{ .Values.configMap.envs.KC_HTTP_ENABLED | quote }}
+    KC_HOSTNAME_STRICT_HTTPS: {{ .Values.configMap.envs.KC_HOSTNAME_STRICT_HTTPS | quote }}
+    KC_LOG_LEVEL: {{ .Values.configMap.envs.KC_LOG_LEVEL | quote }}
+    KC_DB: {{ .Values.configMap.envs.KC_DB | quote }}
+    KC_DB_URL: {{ .Values.configMap.envs.KC_DB_URL  | quote }}

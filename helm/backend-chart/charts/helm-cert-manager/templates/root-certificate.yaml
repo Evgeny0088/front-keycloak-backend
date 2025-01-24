@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: root-cert-ca
+    namespace: cert-manager
+spec:
+    isCA: true
+    duration: 43800h
+    commonName: {{ .Values.commonName }}
+    secretName: {{ .Values.caSecretName }}
+    privateKey:
+        algorithm: ECDSA
+        size: 256
+    issuerRef:
+        name: {{ .Values.rootIssuer }}
+        kind: ClusterIssuer
+        group: cert-manager.io

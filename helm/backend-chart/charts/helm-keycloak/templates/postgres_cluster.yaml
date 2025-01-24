@@ -1,0 +1,25 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+    name: {{ .Values.postgres.name }}
+    namespace: {{ .Values.global.keycloakNs }}
+spec:
+    instances: {{ .Values.postgres.replicaCount }}
+    imageName: {{ .Values.postgres.image }}
+    primaryUpdateStrategy: unsupervised
+    postgresql:
+        pg_hba:
+            - host all all 0.0.0.0/0 md5
+    bootstrap:
+        initdb:
+            database: {{ .Values.postgres.name }}
+            owner: {{ .Values.postgres.keycloakDBOwner }}
+            secret:
+                name: {{ .Values.postgres.dbSecret }}
+    enableSuperuserAccess: true
+    monitoring:
+        enablePodMonitor: true
+
+    # Require 1Gi of space
+    storage:
+        size: {{ .Values.postgres.storage }}

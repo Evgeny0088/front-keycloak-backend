@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: keycloak-cert
+    namespace: {{ .Values.global.keycloakNs }}
+spec:
+    isCA: false
+    duration: 5000h
+    renewBefore: 360h
+    commonName: {{ .Values.commonName }}
+    dnsNames:
+        - {{ .Values.global.dnsName }}
+        - "*.{{ .Values.global.keycloakNs}}.svc.cluster.local"
+    ipAddresses:
+        - 127.0.0.1
+    secretName: keycloak-cert-ca-secret
+    privateKey:
+        algorithm: RSA
+        encoding: PKCS1
+        size: 4096
+    issuerRef:
+        name: {{ .Values.caIssuerName }}
+        kind: ClusterIssuer
+        group: cert-manager.io

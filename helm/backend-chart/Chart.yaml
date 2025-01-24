@@ -1,0 +1,14 @@
+apiVersion: v2
+name: backend-chart
+description: common chart for installation of backend infrastructure
+version: 1.0.0
+appVersion: 1.0.0
+dependencies:
+    - name: helm-keycloak
+      version: 1.0.0
+      repository: "file://./charts/helm-keycloak"
+      condition: false
+    - name: helm-cert-manager
+      version: 1.16.2
+      repository: "file://./charts/helm-cert-manager"
+      condition: true

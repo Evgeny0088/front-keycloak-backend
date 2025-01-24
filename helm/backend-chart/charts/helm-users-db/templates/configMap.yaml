@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.configMap.name }}
+    namespace: {{ .Values.configMap.namespace }}
+data:
+    USERS_DB_URL: {{ .Values.configMap.envs.KC_DB_URL  | quote }}

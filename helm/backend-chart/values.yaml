@@ -1,0 +1,10 @@
+global:
+    keycloakNs: keycloak-ns
+    dnsName: front-keycloak.com
+#helm-keycloak:
+#    keycloak:
+#        keycloakAdmin: admin
+#        keycloakAdminPassword: pass
+#    postgres:
+#        keycloakDBOwner: owner
+#        keycloakDBPassword: pass
