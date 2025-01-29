@@ -5,12 +5,19 @@ metadata:
   namespace: {{ .Values.global.keycloakNs }}
   labels:
     app: {{ .Values.keycloak.name }}
+    {{- if .Values.monitoring.enabled }}
+    {{ .Values.monitoring.monitoringLabelName }}: {{ .Values.monitoring.monitoringLabelValue }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       name: https
       targetPort: http
+      protocol: TCP
+    - port: {{ .Values.keycloak.metricsPort }}
+      name: {{ .Values.keycloak.metricsPortName }}
+      targetPort: {{ .Values.keycloak.metricsPortName }}
       protocol: TCP
   selector:
     app: {{ .Values.keycloak.name }}

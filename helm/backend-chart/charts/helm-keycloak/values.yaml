@@ -6,6 +6,8 @@ keycloak:
     keycloakAdmin: admin
     keycloakAdminPassword: password
     replicaCount: 3
+    metricsPortName: metrics
+    metricsPort: 9000
 
 postgres:
   name: keycloak-db
@@ -57,6 +59,12 @@ readinessProbe:
     path: /health/ready
     port: 9000
   initialDelaySeconds: 90
+
+monitoring:
+  enabled: true
+  metricsPath: "/metrics"
+  monitoringLabelName: prometheus-monitored
+  monitoringLabelValue: "prometheus"
 
 service:
   name: keycloak-service

@@ -33,6 +33,9 @@ spec:
               - name: http
                 containerPort: 8443
                 protocol: TCP
+              - name: {{ .Values.keycloak.metricsPortName }}
+                containerPort: {{ .Values.keycloak.metricsPort }}
+                protocol: TCP
             readinessProbe:
               {{- toYaml .Values.readinessProbe | nindent 14 }}
             resources:

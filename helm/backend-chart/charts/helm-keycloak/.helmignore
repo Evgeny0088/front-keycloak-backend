@@ -27,6 +27,7 @@
 #templates/configMap.yaml
 #templates/deployment.yaml
 templates/hpa.yaml
+#templates/service-monitor.yaml
 #templates/ingress.yaml
 #templates/keycloak-db-secret.yaml
 #templates/keycloak-secret.yaml

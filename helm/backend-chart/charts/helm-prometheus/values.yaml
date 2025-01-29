@@ -1,0 +1,8 @@
+prometheus:
+  podMonitorEnabled: false
+  name: prometheus-monitoring
+  namespace: monitoring
+  prometheusRoleName: prometheus
+  prometheusOperatorRoleName: prometheus-operator
+  serviceMonitorLabel: prometheus
+  version: 0.79.2

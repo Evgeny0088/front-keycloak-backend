@@ -1,0 +1,27 @@
+{{- if .Values.monitoring.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: {{ .Values.keycloak.name}}-monitor
+    namespace: {{ .Values.global.keycloakNs }}
+    labels:
+        app-monitoring: prometheus
+spec:
+    endpoints:
+        - interval: 10s
+          targetPort: {{ .Values.keycloak.metricsPort }}
+          path: {{ default "/metrics" ( .Values.monitoring.metricsPath) | quote }}
+          scheme: https
+          tlsConfig:
+              ca:
+                  secret:
+                      key: tls.crt
+                      name: {{ .Values.ingress.secretName }}
+              serverName: {{ .Values.service.name }}.{{ .Values.global.keycloakNs }}.svc.cluster.local
+    namespaceSelector:
+        matchNames:
+            - {{ .Values.global.keycloakNs }}
+    selector:
+        matchLabels:
+          {{ .Values.monitoring.monitoringLabelName }}: {{ .Values.monitoring.monitoringLabelValue }}
+{{- end -}}
