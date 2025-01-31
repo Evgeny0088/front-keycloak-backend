@@ -1,6 +1,9 @@
 global:
     keycloakNs: keycloak-ns
     dnsName: front-keycloak.com
+    dnsGrafana: grafana-monitoring.com
+    monitoringNs: monitoring
+    grafanaSecretName: grafana-cert-ca-secret
 #helm-keycloak:
 #    keycloak:
 #        keycloakAdmin: admin

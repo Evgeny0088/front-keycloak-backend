@@ -1,0 +1,34 @@
+grafana:
+    enabled: true
+    image:
+        tag: 9.0.2
+    persistence:
+        enabled: true
+        size: 100Mi
+        storageClassName: standard
+    sidecar:
+        datasources:
+            enabled: true
+loki:
+    config:
+        compactor:
+            compaction_interval: 10m
+            retention_delete_delay: 1h
+            retention_delete_worker_count: 150
+            retention_enabled: true
+            working_directory: /data/retention
+        limits_config:
+            retention_period: 2h
+    enabled: true
+    isDefault: true
+    persistence:
+        enabled: true
+        size: 100Mi
+        storageClassName: standard
+prometheus:
+    enabled: false
+    isDefault: false
+promtail:
+    config:
+        lokiAddress: http://{{ .Release.Name }}:3100/loki/api/v1/push
+    enabled: true

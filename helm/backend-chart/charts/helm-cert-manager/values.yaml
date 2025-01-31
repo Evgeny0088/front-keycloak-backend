@@ -2,4 +2,5 @@ createCertManager: true
 rootIssuer: root-issuer
 caSecretName: root-ca-secret
 commonName: front.keycloak
+grafanaCn: grafana-monitoring.com
 caIssuerName: keycloak-certificate-issuer

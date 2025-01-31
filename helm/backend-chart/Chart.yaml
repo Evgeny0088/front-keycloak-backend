@@ -9,6 +9,10 @@ dependencies:
       repository: "file://./charts/helm-keycloak"
       condition: false
     - name: helm-cert-manager
-      version: 1.16.2
+      version: 1.0.0
       repository: "file://./charts/helm-cert-manager"
+      condition: true
+    - name: helm-users-db
+      version: 1.0.0
+      repository: "file://./charts/helm-users-db"
       condition: true

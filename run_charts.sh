@@ -35,7 +35,7 @@ kubectl wait --for condition=established crd/certificates.cert-manager.io crd/is
 kubectl -n cert-manager rollout status deployment.apps/cert-manager-webhook
 
 # install reflector to propagate secrets across namespaces
-#$ kubectl apply -f https://github.com/emberstack/kubernetes-reflector/releases/latest/download/reflector.yaml
+$ kubectl apply -f https://github.com/emberstack/kubernetes-reflector/releases/latest/download/reflector.yaml
 
 # install prometheus-crds
 # kubectl apply server-side -f helm/backend-chart/charts/helm-prometheus-crds/templates
@@ -55,6 +55,9 @@ helm upgrade --install \
     --namespace backend-ns \
     --set global.keycloakNs=keycloak-ns \
     --set global.dnsName=front-keycloak.com \
+    --set global.monitoringNs=monitoring \
+    --set global.grafanaSecretName=grafana-cert-ca-secret \
+    --set global.dnsGrafana=grafana-monitoring.com \
     helm-cert-manager \
     ./helm/backend-chart/charts/helm-cert-manager
 
@@ -105,6 +108,30 @@ helm upgrade --install \
     --namespace backend-ns \
     helm-prometheus \
     ./helm/backend-chart/charts/helm-prometheus
+
+# install loki simple scalable version, promtail, grafana
+# helm repo add grafana https://grafana.github.io/helm-charts
+# helm repo update
+helm upgrade --install \
+ loki \
+  --namespace=monitoring \
+ --values ./helm/backend-chart/charts/helm-grafana-loki/templates/grafana-loki-values.yaml \
+ grafana/loki-stack &&\
+
+ # install grafana ingress
+ helm upgrade --install \
+ --atomic \
+ --timeout 1m \
+ --wait \
+ --wait-for-jobs \
+ --namespace backend-ns \
+ --set global.monitoringNs=monitoring \
+ --set global.grafanaSecretName=grafana-cert-ca-secret \
+ --set global.dnsGrafana=grafana-monitoring.com \
+ helm-grafana-ingress \
+ ./helm/backend-chart/charts/helm-grafana-loki
+
+ kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
 
 # dry-run
 #helm template --dry-run --debug \
