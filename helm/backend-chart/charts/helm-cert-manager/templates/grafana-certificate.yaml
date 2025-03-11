@@ -5,7 +5,7 @@ metadata:
     namespace: {{ .Values.global.monitoringNs }}
 spec:
     isCA: false
-    duration: 5000h
+    duration: 10000h
     renewBefore: 360h
     commonName: {{ .Values.grafanaCn }}
     dnsNames:

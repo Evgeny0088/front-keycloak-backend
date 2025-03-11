@@ -10,7 +10,7 @@ spec:
             reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "application-ns"
             reflector.v1.k8s.emberstack.com/reflection-auto-enabled: 'true'
     isCA: false
-    duration: 5000h
+    duration: 10000h
     renewBefore: 360h
     commonName: {{ .Values.commonName }}
     dnsNames:

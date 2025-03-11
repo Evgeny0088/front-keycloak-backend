@@ -11,4 +11,6 @@ configMap:
   name: users-db-config-map
   namespace: users-db-ns
   envs:
-    KC_DB_URL: jdbc:postgresql://users-db-rw.users-db-ns:5432/users-db
+    JDBC_DB_URL: jdbc:postgresql://users-db-rw.users-db-ns:5432/users-db
+    R2DBC_DB_URL: r2dbc:postgresql://users-db-rw.users-db-ns:5432/users-db
+    MIGRATION_LOG_LEVEL: info

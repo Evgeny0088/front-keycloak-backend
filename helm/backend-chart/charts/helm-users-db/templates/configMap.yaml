@@ -3,5 +3,11 @@ kind: ConfigMap
 metadata:
     name: {{ .Values.configMap.name }}
     namespace: {{ .Values.configMap.namespace }}
+    annotations:
+        reflector.v1.k8s.emberstack.com/reflection-allowed: 'true'
+        reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "application-ns"
+        reflector.v1.k8s.emberstack.com/reflection-auto-enabled: 'true'
 data:
-    USERS_DB_URL: {{ .Values.configMap.envs.KC_DB_URL  | quote }}
+    JDBC_DB_URL: {{ .Values.configMap.envs.JDBC_DB_URL  | quote }}
+    R2DBC_DB_URL: {{ .Values.configMap.envs.R2DBC_DB_URL  | quote }}
+    MIGRATION_LOG_LEVEL: {{ .Values.configMap.envs.MIGRATION_LOG_LEVEL | quote }}

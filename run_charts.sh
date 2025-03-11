@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # enable ingress if required
-minikube addons enable ingress
+minikube addons enable ingress && \
 kubectl -n ingress-nginx rollout status deployment.apps/ingress-nginx-controller
 
 # install backend-ns if required
@@ -17,6 +17,13 @@ if [[ ${FOUND_NS} == "" ]]; then
     kubectl create namespace keycloak-ns
 fi
 
+# install monitoring if required
+FOUND_NS=""
+FOUND_NS=kubectl get ns monitoring
+if [[ ${FOUND_NS} == "" ]]; then
+    kubectl create namespace monitoring
+fi
+
 # install users-db-ns if required
 FOUND_NS=""
 FOUND_NS=kubectl get ns users-db-ns
@@ -25,20 +32,20 @@ if [[ ${FOUND_NS} == "" ]]; then
 fi
 
 # install cloud native
-kubectl apply --server-side -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/releases/cnpg-1.24.0.yaml
-kubectl wait --for condition=established crd/clusters.postgresql.cnpg.io crd/clusterimagecatalogs.postgresql.cnpg.io &&\
+kubectl apply --server-side -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/releases/cnpg-1.24.0.yaml && \
+kubectl wait --for condition=established crd/clusters.postgresql.cnpg.io crd/clusterimagecatalogs.postgresql.cnpg.io && \
 kubectl -n cnpg-system rollout status deployment.apps/cnpg-controller-manager
 
 # install cert manager
-kubectl apply -f ./helm/backend-chart/charts/helm-cert-manager/templates/cert-manager.yaml
-kubectl wait --for condition=established crd/certificates.cert-manager.io crd/issuers.cert-manager.io &&\
+kubectl apply -f ./helm/backend-chart/charts/helm-cert-manager/templates/cert-manager.yaml && \
+kubectl wait --for condition=established crd/certificates.cert-manager.io crd/issuers.cert-manager.io && \
 kubectl -n cert-manager rollout status deployment.apps/cert-manager-webhook
 
 # install reflector to propagate secrets across namespaces
-$ kubectl apply -f https://github.com/emberstack/kubernetes-reflector/releases/latest/download/reflector.yaml
+kubectl apply -f https://github.com/emberstack/kubernetes-reflector/releases/latest/download/reflector.yaml
 
 # install prometheus-crds
-# kubectl apply server-side -f helm/backend-chart/charts/helm-prometheus-crds/templates
+kubectl apply --server-side -f helm/backend-chart/charts/helm-prometheus-crds/templates
 
 # dry-run
 #helm template --dry-run --debug \
@@ -116,7 +123,7 @@ helm upgrade --install \
  loki \
   --namespace=monitoring \
  --values ./helm/backend-chart/charts/helm-grafana-loki/templates/grafana-loki-values.yaml \
- grafana/loki-stack &&\
+ grafana/loki-stack
 
  # install grafana ingress
  helm upgrade --install \
@@ -131,7 +138,7 @@ helm upgrade --install \
  helm-grafana-ingress \
  ./helm/backend-chart/charts/helm-grafana-loki
 
- kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
+kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
 
 # dry-run
 #helm template --dry-run --debug \
@@ -142,8 +149,8 @@ helm upgrade --install \
 # get file content from keycloak secret to keycloak.crt file before adding to keystore
 # add tls cert for keycloak if required
 
-#kubectl get secret keycloak-cert-ca-secret -n keycloak-ns -o jsonpath='{.data.tls\.crt}' | base64 --decode > ./local/keycloak.crt &&\
-#sudo keytool -import -alias keycloak_crt -file ./local/keycloak.crt -keystore /usr/lib/jvm/jdk-17.0.1/lib/security/cacerts -storepass changeit -noprompt &&\
+#kubectl get secret keycloak-cert-ca-secret -n keycloak-ns -o jsonpath='{.data.tls\.crt}' | base64 --decode > ./local/keycloak.crt && \
+#sudo keytool -import -alias keycloak_crt -file ./local/keycloak.crt -keystore /usr/lib/jvm/jdk-17.0.1/lib/security/cacerts -storepass changeit -noprompt && \
 #openssl x509 -in ./local/keycloak.crt -text -noout
 
  # verify if cert exists
