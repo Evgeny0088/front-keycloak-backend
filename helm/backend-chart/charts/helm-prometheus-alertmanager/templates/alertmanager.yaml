@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+    name: {{ .Values.alertmanager.name }}
+    namespace: {{ .Values.alertmanager.namespace }}
+spec:
+    baseImage: quay.io/prometheus/alertmanager
+    configSecret: {{ .Values.alertmanager.name }}-service
+    version: v0.20.0
+    replicas: 2
+    securityContext:
+        fsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 1000

@@ -113,8 +113,31 @@ helm upgrade --install \
     --wait \
     --wait-for-jobs \
     --namespace backend-ns \
+    --set global.monitoringNs=monitoring \
+    --set global.alertmanagerName=main-alertmanager \
+    --set global.rule.ruleName=business-users-backend-rule \
+    --set global.rule.name="business error users-backend rule" \
     helm-prometheus \
     ./helm/backend-chart/charts/helm-prometheus
+
+# install prometheus alert manager
+helm upgrade --install \
+    --atomic \
+    --timeout 30m \
+    --wait \
+    --wait-for-jobs \
+    --namespace backend-ns \
+    --set global.monitoringNs=monitoring \
+    --set global.alertmanagerName=main-alertmanager \
+    --set global.rule.ruleName=business-users-backend-rule \
+    --set email.emailSendTo=$EMAIL_SEND_TO \
+    --set email.emailSendFrom=$EMAIL \
+    --set email.username=$EMAIL \
+    --set email.password=$EMAIL_PASS \
+    --set email.host=$EMAIL_HOST \
+    --set email.port='587' \
+    helm-prometheus-alertmanager \
+    ./helm/backend-chart/charts/helm-prometheus-alertmanager
 
 # install loki simple scalable version, promtail, grafana
 # helm repo add grafana https://grafana.github.io/helm-charts
@@ -140,11 +163,25 @@ helm upgrade --install \
 
 kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
 
+# helm repo update
+# helm search repo prometheus
+# helm show values prometheus-community/kube-prometheus-stack > prometheus_values.yml
+# helm pull prometheus-community/prometheus
+
 # dry-run
 #helm template --dry-run --debug \
 #    --set postgres.dbOwner=$USERS_DB_OWNER \
 #    --set postgres.dbPassword=$USERS_DB_PASSWORD \
 #    ./helm/backend-chart/charts/helm-users-db
+
+ # dry prometheus
+#helm template --dry-run --debug \
+#--set global.monitoringNs=monitoring \
+# --set global.alertLabelName=alertmanager \
+# --set global.rule.ruleName=business-users-backend-rule \
+# --set global.rule.name="business error users-backend rule" \
+#helm-prometheus \
+#./helm/backend-chart/charts/helm-prometheus
 
 # get file content from keycloak secret to keycloak.crt file before adding to keystore
 # add tls cert for keycloak if required

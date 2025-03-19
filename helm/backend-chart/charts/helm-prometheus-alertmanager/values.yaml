@@ -1,0 +1,14 @@
+alertmanager:
+  name: main-alertmanager
+  namespace: monitoring
+  saName: alertmanager-sa
+  portName: web
+
+email:
+  host: "https://any-server.com"
+  port: 555
+  username: "username"
+  password: "password"
+  emailSendTo: "test@email.com"
+  emailSendFrom: "test@email.com"
+

@@ -1,0 +1,32 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+    name: alertmanagerconfig
+    namespace: {{ .Values.alertmanager.namespace }}
+    labels:
+        alert.config: alertmanager
+spec:
+    route:
+        groupBy: ['alertname']
+        groupInterval: 10s
+        groupWait: 10s
+        repeatInterval: 1m
+        receiver: 'email-notification'
+        matchers:
+              - name: team
+                value: backend
+              - name: severity
+                value: warning
+    receivers:
+        - name: email-notification
+          emailConfigs:
+              - sendResolved: true
+                smarthost: {{ .Values.email.host }}:{{ .Values.email.port }}
+                requireTLS: true
+                authUsername: {{ .Values.email.username }}
+                authPassword:
+                    name: users-backend-secret
+                    key: EMAIL_PASS
+                to: {{ .Values.email.emailSendTo }}
+                from: {{ .Values.email.emailSendFrom }}
+                text: "You received alert notification: {{ .Values.global.rule.ruleName }}"

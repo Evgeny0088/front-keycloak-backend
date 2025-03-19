@@ -4,10 +4,6 @@ global:
     dnsGrafana: grafana-monitoring.com
     monitoringNs: monitoring
     grafanaSecretName: grafana-cert-ca-secret
-#helm-keycloak:
-#    keycloak:
-#        keycloakAdmin: admin
-#        keycloakAdminPassword: pass
-#    postgres:
-#        keycloakDBOwner: owner
-#        keycloakDBPassword: pass
+    alertmanagerName: main-alertmanager
+    rule:
+        ruleName: business-users-backend-rule

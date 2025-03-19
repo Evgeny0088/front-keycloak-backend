@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+    name: {{ .Values.global.rule.ruleName }}
+    namespace: {{ .Values.prometheus.namespace }}
+    labels:
+        alertmanager: {{ .Values.global.alertmanagerName }}
+        monitoring: prometheus
+spec:
+    groups:
+        - name: {{ .Values.global.rule.ruleName }}
+          rules:
+              - alert: {{ .Values.global.rule.ruleName }}
+                annotations:
+                    description: Error occured at endpoint /auth/profile.
+                    summary: Error occured at endpoint /auth/profile.
+                expr: |
+                    sum(rate(profile_timer_seconds_count{container="users-backend", status_code="400"}[1m])) > 0.100
+                for: 1m
+                labels:
+                    team: backend
+                    severity: warning

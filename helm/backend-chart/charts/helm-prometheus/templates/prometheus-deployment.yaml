@@ -20,12 +20,21 @@ spec:
     replicas: 2
     logLevel: info
     logFormat: logfmt
-    retention: 7d
+    retention: 2h
     scrapeInterval: 30s
     securityContext:
         fsGroup: 0
         runAsNonRoot: false
         runAsUser: 0
+    ruleSelector:
+        matchLabels:
+            alertmanager: {{ .Values.global.alertmanagerName }}
+            monitoring: prometheus
+    alerting:
+        alertmanagers:
+            -   namespace: {{ .Values.prometheus.namespace }}
+                name: {{ .Values.global.alertmanagerName }}-service
+                port: web
     storage:
         volumeClaimTemplate:
             spec:
