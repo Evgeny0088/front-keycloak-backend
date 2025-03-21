@@ -1,0 +1,8 @@
+kubeMetrics:
+  name: kube-metrics
+  saName: kuber-metrics-sa
+  roleName: kuber-metrics-role
+  roleBinding: kuber-metrics-binding
+  portName: http-metrics
+
+

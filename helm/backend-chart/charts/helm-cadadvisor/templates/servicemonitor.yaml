@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: {{ .Values.cadadvisor.name}}-monitor
+    namespace: {{ .Values.global.monitoringNs }}
+    labels:
+        app-monitoring: prometheus
+spec:
+    selector:
+        matchLabels:
+            name: {{ .Values.cadadvisor.name }}
+    endpoints:
+        - interval: 20s
+          port: {{ .Values.cadadvisor.portName }}

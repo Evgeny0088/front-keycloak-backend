@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    name: {{ .Values.kubeMetrics.roleBinding }}
+    namespace: {{ .Values.global.monitoringNs }}
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: {{ .Values.kubeMetrics.roleName }}
+subjects:
+    - kind: ServiceAccount
+      name: {{ .Values.kubeMetrics.saName }}
+      namespace: {{ .Values.global.monitoringNs }}

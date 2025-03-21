@@ -1,0 +1,5 @@
+cadadvisor:
+  name: cadadvisor
+  saName: cadadvisor
+  portName: http
+

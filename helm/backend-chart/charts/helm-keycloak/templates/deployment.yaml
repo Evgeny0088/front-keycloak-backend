@@ -1,75 +1,75 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.keycloak.name }}
-  namespace: {{ .Values.global.keycloakNs }}
-  labels:
-    app: {{ .Values.keycloak.name }}
-spec:
-  replicas: {{ .Values.keycloak.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ .Values.keycloak.name }}
-  template:
-    metadata:
-      labels:
+    name: {{ .Values.keycloak.name }}
+    namespace: {{ .Values.global.keycloakNs }}
+    labels:
         app: {{ .Values.keycloak.name }}
-    spec:
-      volumes:
-        - name: tls
-          secret:
-            secretName: {{ .Values.ingress.secretName }}
-      containers:
-          - name: {{ .Chart.Name }}
-            image: "{{ .Values.keycloak.image }}"
-            imagePullPolicy: {{ .Values.keycloak.pullPolicy }}
-            volumeMounts:
-              - mountPath: /etc/ssl
-                name: tls
-                readOnly: true
-            securityContext:
-              {{- toYaml .Values.securityContext | nindent 14 }}
-            ports:
-              - name: http
-                containerPort: 8443
-                protocol: TCP
-              - name: {{ .Values.keycloak.metricsPortName }}
-                containerPort: {{ .Values.keycloak.metricsPort }}
-                protocol: TCP
-            readinessProbe:
-              {{- toYaml .Values.readinessProbe | nindent 14 }}
-            resources:
-              {{- toYaml .Values.resources | nindent 14 }}
-            args: [ "start" ]
-            env:
-            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.keycloak.secretName }}
-                  key: KEYCLOAK_ADMIN_PASSWORD
-            - name: KC_BOOTSTRAP_ADMIN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.keycloak.secretName }}
-                  key: KEYCLOAK_ADMIN
-            - name: KC_DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.dbSecret }}
-                  key: username
-            - name: KC_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.postgres.dbSecret }}
-                  key: password
-            - name: KC_HTTPS_CERTIFICATE_FILE
-              value: "/etc/ssl/tls.crt"
-            - name: KC_HTTPS_CERTIFICATE_KEY_FILE
-              value: "/etc/ssl/tls.key"
-            - name: JAVA_OPTS
-              value: >-
-                -server -Xms512m -Xmx512m
-            envFrom:
-                - configMapRef:
-                      name: {{ .Values.configMap.name }}
+spec:
+    replicas: {{ .Values.keycloak.replicaCount }}
+    selector:
+        matchLabels:
+            app: {{ .Values.keycloak.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.keycloak.name }}
+        spec:
+            volumes:
+                - name: tls
+                  secret:
+                      secretName: {{ .Values.ingress.secretName }}
+            containers:
+                - name: {{ .Chart.Name }}
+                  image: "{{ .Values.keycloak.image }}"
+                  imagePullPolicy: {{ .Values.keycloak.pullPolicy }}
+                  volumeMounts:
+                      - mountPath: /etc/ssl
+                        name: tls
+                        readOnly: true
+                  securityContext:
+              {{- toYaml .Values.securityContext | nindent 22 }}
+                  ports:
+                      - name: http
+                        containerPort: 8443
+                        protocol: TCP
+                      - name: {{ .Values.keycloak.metricsPortName }}
+                        containerPort: {{ .Values.keycloak.metricsPort }}
+                        protocol: TCP
+                  readinessProbe:
+              {{- toYaml .Values.readinessProbe | nindent 22 }}
+                  resources:
+              {{- toYaml .Values.resources | nindent 22 }}
+                  args: [ "start" ]
+                  env:
+                      - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: {{ .Values.keycloak.secretName }}
+                                key: KEYCLOAK_ADMIN_PASSWORD
+                      - name: KC_BOOTSTRAP_ADMIN_USERNAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: {{ .Values.keycloak.secretName }}
+                                key: KEYCLOAK_ADMIN
+                      - name: KC_DB_USERNAME
+                        valueFrom:
+                            secretKeyRef:
+                                name: {{ .Values.postgres.dbSecret }}
+                                key: username
+                      - name: KC_DB_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: {{ .Values.postgres.dbSecret }}
+                                key: password
+                      - name: KC_HTTPS_CERTIFICATE_FILE
+                        value: "/etc/ssl/tls.crt"
+                      - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+                        value: "/etc/ssl/tls.key"
+                      - name: JAVA_OPTS
+                        value: >-
+                            -server -Xms512m -Xmx512m
+                  envFrom:
+                      - configMapRef:
+                            name: {{ .Values.configMap.name }}
 

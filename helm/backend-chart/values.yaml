@@ -6,4 +6,6 @@ global:
     grafanaSecretName: grafana-cert-ca-secret
     alertmanagerName: main-alertmanager
     rule:
-        ruleName: business-users-backend-rule
+        ruleNameBadRequest: business-users-backend-rule
+        ruleNameOOMError: oom-error-rule
+        ruleNamePodRestarts: users-backend-pod-restarts

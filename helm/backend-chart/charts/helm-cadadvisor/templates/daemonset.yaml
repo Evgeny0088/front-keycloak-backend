@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+    name: {{ .Values.cadadvisor.name }}
+    namespace: {{ .Values.global.monitoringNs }}
+    annotations:
+        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+spec:
+    selector:
+        matchLabels:
+            name: {{ .Values.cadadvisor.name }}
+    template:
+        metadata:
+            labels:
+                name: {{ .Values.cadadvisor.name }}
+        spec:
+            serviceAccountName: {{ .Values.cadadvisor.saName }}-sa
+            containers:
+                - name: {{ .Values.cadadvisor.name }}
+                  image: gcr.io/cadvisor/cadvisor:v0.45.0
+                  resources:
+                      requests:
+                          memory: 400Mi
+                          cpu: 400m
+                      limits:
+                          memory: 1000Mi
+                          cpu: 800m
+                  volumeMounts:
+                      - name: rootfs
+                        mountPath: /rootfs
+                        readOnly: true
+                      - name: var-run
+                        mountPath: /var/run
+                        readOnly: true
+                      - name: sys
+                        mountPath: /sys
+                        readOnly: true
+                      - name: docker
+                        mountPath: /var/lib/docker
+                        readOnly: true
+                      - name: disk
+                        mountPath: /dev/disk
+                        readOnly: true
+                  ports:
+                      - name: {{ .Values.cadadvisor.portName }}
+                        containerPort: 8080
+                        protocol: TCP
+            automountServiceAccountToken: false
+            terminationGracePeriodSeconds: 30
+            volumes:
+                - name: rootfs
+                  hostPath:
+                      path: /
+                - name: var-run
+                  hostPath:
+                      path: /var/run
+                - name: sys
+                  hostPath:
+                      path: /sys
+                - name: docker
+                  hostPath:
+                      path: /var/lib/docker
+                - name: disk
+                  hostPath:
+                      path: /dev/disk

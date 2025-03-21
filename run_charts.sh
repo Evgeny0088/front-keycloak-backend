@@ -115,8 +115,9 @@ helm upgrade --install \
     --namespace backend-ns \
     --set global.monitoringNs=monitoring \
     --set global.alertmanagerName=main-alertmanager \
-    --set global.rule.ruleName=business-users-backend-rule \
-    --set global.rule.name="business error users-backend rule" \
+    --set global.rule.ruleNameBadRequest=business-users-backend-rule \
+    --set global.rule.ruleNameOOMError=oom-error-rule \
+    --set global.rule.ruleNamePodRestarts=users-backend-pod-restarts \
     helm-prometheus \
     ./helm/backend-chart/charts/helm-prometheus
 
@@ -163,6 +164,28 @@ helm upgrade --install \
 
 kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
 
+# install cadadvisor
+helm upgrade --install \
+ --atomic \
+ --timeout 1m \
+ --wait \
+ --wait-for-jobs \
+ --namespace backend-ns \
+ --set global.monitoringNs=monitoring \
+helm-cadadvisor \
+./helm/backend-chart/charts/helm-cadadvisor
+
+# install kube state metrics
+helm upgrade --install \
+ --atomic \
+ --timeout 1m \
+ --wait \
+ --wait-for-jobs \
+ --namespace backend-ns \
+ --set global.monitoringNs=monitoring \
+helm-kube-state-metrics \
+./helm/backend-chart/charts/helm-kube-state-metrics
+
 # helm repo update
 # helm search repo prometheus
 # helm show values prometheus-community/kube-prometheus-stack > prometheus_values.yml
@@ -182,6 +205,13 @@ kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/cha
 # --set global.rule.name="business error users-backend rule" \
 #helm-prometheus \
 #./helm/backend-chart/charts/helm-prometheus
+
+#dry run kube state metrics
+#helm template --dry-run --debug \
+# --namespace backend-ns \
+# --set global.monitoringNs=monitoring \
+#helm-kube-state-metrics \
+#./helm/backend-chart/charts/helm-kube-state-metrics
 
 # get file content from keycloak secret to keycloak.crt file before adding to keystore
 # add tls cert for keycloak if required

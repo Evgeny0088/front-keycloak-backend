@@ -1,16 +1,16 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-    name: {{ .Values.global.rule.ruleName }}
+    name: {{ .Values.global.rule.ruleNameBadRequest }}
     namespace: {{ .Values.prometheus.namespace }}
     labels:
         alertmanager: {{ .Values.global.alertmanagerName }}
         monitoring: prometheus
 spec:
     groups:
-        - name: {{ .Values.global.rule.ruleName }}
+        - name: {{ .Values.global.rule.ruleNameBadRequest }}
           rules:
-              - alert: {{ .Values.global.rule.ruleName }}
+              - alert: {{ .Values.global.rule.ruleNameBadRequest }}
                 annotations:
                     description: Error occured at endpoint /auth/profile.
                     summary: Error occured at endpoint /auth/profile.
@@ -19,4 +19,27 @@ spec:
                 for: 1m
                 labels:
                     team: backend
+                    badRequestError: bad-request
                     severity: warning
+              - alert: {{ .Values.global.rule.ruleNameOOMError }}
+                annotations:
+                    description: OOM error happened at container users-backend container more than 3 times in second
+                    summary: OOM error happened at container users-backend container more than 3 times in second
+                expr: |
+                    sum(increase(container_oom_events_total{container_label_io_kubernetes_container_name="users-backend", container_label_io_kubernetes_pod_namespace="application-ns"}[1h])) > 3
+                for: 20m
+                labels:
+                    team: backend
+                    oomError: oom-error
+                    severity: critical
+              - alert: {{ .Values.global.rule.ruleNamePodRestarts }}
+                annotations:
+                    description: Users-backend pods restarted more than 2 times
+                    summary: Users-backend pods restarted more than 2 times
+                expr: |
+                    sum(increase(kube_pod_container_status_restarts_total{exported_pod=~"users-backend.*", exported_namespace="application-ns"}[10m])) > 2
+                for: 10m
+                labels:
+                    team: backend
+                    oomError: restarts-error
+                    severity: critical

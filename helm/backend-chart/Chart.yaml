@@ -16,15 +16,23 @@ dependencies:
       version: 1.0.0
       repository: "file://./charts/helm-users-db"
       condition: true
-    -   name: helm-prometheus
-        version: 0.79.2
-        repository: "file://./charts/helm-prometheus"
-        condition: true
-    -   name: helm-prometheus-alertmanager
-        version: 0.79.2
-        repository: "file://./charts/helm-prometheus-alertmanager"
-        condition: true
-    -   name: helm-prometheus-crds
-        version: 0.79.2
-        repository: "file://./charts/helm-prometheus-crds"
-        condition: true
+    - name: helm-prometheus
+      version: 0.79.2
+      repository: "file://./charts/helm-prometheus"
+      condition: true
+    - name: helm-prometheus-alertmanager
+      version: 0.79.2
+      repository: "file://./charts/helm-prometheus-alertmanager"
+      condition: true
+    - name: helm-prometheus-crds
+      version: 0.79.2
+      repository: "file://./charts/helm-prometheus-crds"
+      condition: true
+    - name: helm-cadadvisor
+      repository: "file://./charts/helm-cadadvisor"
+      version: 1.0.0
+      condition: true
+    - name: helm-kube-state-metrics
+      repository: "file://./charts/helm-kube-state-metrics"
+      version: 1.0.0
+      condition: true

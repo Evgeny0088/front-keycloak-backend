@@ -1,0 +1,8 @@
+{{- if not (lookup "v1" "Namespace" "" "monitoring") }}
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: {{ .Values.global.monitoringNs }}
+    labels:
+        monitoring: prometheus
+  {{- end -}}

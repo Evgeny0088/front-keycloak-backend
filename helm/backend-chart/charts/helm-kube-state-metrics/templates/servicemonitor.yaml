@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: {{ .Values.kubeMetrics.name }}-monitor
+    namespace: {{ .Values.global.monitoringNs }}
+    labels:
+        app-monitoring: prometheus
+spec:
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: {{ .Values.kubeMetrics.name }}
+    endpoints:
+        - interval: 20s
+          port: {{ .Values.kubeMetrics.portName }}

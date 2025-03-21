@@ -29,4 +29,4 @@ spec:
                     key: EMAIL_PASS
                 to: {{ .Values.email.emailSendTo }}
                 from: {{ .Values.email.emailSendFrom }}
-                text: "You received alert notification: {{ .Values.global.rule.ruleName }}"
+                text: "You received alert notification: {{ .Values.global.rule.ruleNameBadRequest }}"
