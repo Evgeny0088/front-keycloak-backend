@@ -1,0 +1,12 @@
+kafka:
+    name: kafka
+    service: kafka-service
+    namespace: kafka-ns
+    configMap: kafka-config-map
+    secret: kafka-secret
+
+zookeeper:
+    name: zookeeper
+    service: zookeeper-service
+    port: 2181
+    kickTime: 2000

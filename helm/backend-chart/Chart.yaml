@@ -36,3 +36,7 @@ dependencies:
       repository: "file://./charts/helm-kube-state-metrics"
       version: 1.0.0
       condition: true
+    - name: helm-kafka
+      repository: "file://./charts/helm-kafka"
+      version: 1.0.0
+      condition: true

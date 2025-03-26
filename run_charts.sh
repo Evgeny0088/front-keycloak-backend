@@ -186,6 +186,16 @@ helm upgrade --install \
 helm-kube-state-metrics \
 ./helm/backend-chart/charts/helm-kube-state-metrics
 
+# install kafka cluster
+helm upgrade --install \
+ --atomic \
+ --timeout 5m \
+ --wait \
+ --wait-for-jobs \
+ --namespace backend-ns \
+helm-kafka \
+./helm/backend-chart/charts/helm-kafka
+
 # helm repo update
 # helm search repo prometheus
 # helm show values prometheus-community/kube-prometheus-stack > prometheus_values.yml
@@ -212,6 +222,12 @@ helm-kube-state-metrics \
 # --set global.monitoringNs=monitoring \
 #helm-kube-state-metrics \
 #./helm/backend-chart/charts/helm-kube-state-metrics
+
+# dry run kafka
+#helm template --dry-run --debug \
+#--namespace backend-ns \
+#helm-kafka \
+#./helm/backend-chart/charts/helm-kafka
 
 # get file content from keycloak secret to keycloak.crt file before adding to keystore
 # add tls cert for keycloak if required

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app: {{ .Values.kafka.name }}
+    name: {{ .Values.kafka.service }}
+    namespace: {{ .Values.kafka.namespace }}
+spec:
+    ports:
+        - name: kafka-port
+          port: 9092
+          targetPort: 9092
+          protocol: TCP
+    selector:
+        app: {{ .Values.kafka.name }}
+    clusterIP: None
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    name: {{ .Values.kafka.name }}
+    namespace: {{ .Values.kafka.namespace }}
+    labels:
+        app: {{ .Values.kafka.name }}
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: {{ .Values.kafka.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.kafka.name }}
+        spec:
+            containers:
+                - name: {{ .Values.kafka.service }}
+                  image: 'confluentinc/cp-kafka:7.0.0'
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                      - containerPort: 9092
+                  envFrom:
+                      - configMapRef:
+                            name: {{ .Values.kafka.configMap }}
+    serviceName: {{ .Values.kafka.service }}
