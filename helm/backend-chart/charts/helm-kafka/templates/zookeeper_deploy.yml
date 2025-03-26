@@ -14,13 +14,12 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
     name: {{ .Values.zookeeper.name }}
     namespace: {{ .Values.kafka.namespace }}
-    labels:
-        app: {{ .Values.zookeeper.name }}
 spec:
+    serviceName: {{ .Values.zookeeper.service }}
     replicas: 1
     selector:
         matchLabels:
@@ -30,14 +29,39 @@ spec:
             labels:
                 app: {{ .Values.zookeeper.name }}
         spec:
+            securityContext:
+                fsGroup: 1000
+            enableServiceLinks: false
             containers:
-                - image: confluentinc/cp-zookeeper:7.3.2
+                - name: zookeeper
                   imagePullPolicy: IfNotPresent
-                  name: zookeeper
+                  image: confluentinc/cp-zookeeper:7.3.2
                   ports:
                       - containerPort: {{ .Values.zookeeper.port }}
-                  env:
-                      - name: ZOOKEEPER_CLIENT_PORT
-                        value: {{ .Values.zookeeper.port | quote }}
-                      - name: ZOOKEEPER_TICK_TIME
-                        value: {{ .Values.zookeeper.kickTime | quote }}
+                  envFrom:
+                      - configMapRef:
+                            name: {{ .Values.zookeeper.configMap }}
+                  volumeMounts:
+                      - mountPath: {{ .Values.zookeeper.mountDataPath }}
+                        name: zookeeper-data
+                      - mountPath: {{ .Values.zookeeper.mountLogPath }}
+                        name: zookeeper-log
+            hostname: zookeeper
+            restartPolicy: Always
+    volumeClaimTemplates:
+        - metadata:
+              name: zookeeper-data
+          spec:
+              accessModes:
+                  - ReadWriteOnce
+              resources:
+                  requests:
+                      storage: 200Mi
+        - metadata:
+              name: zookeeper-log
+          spec:
+              accessModes:
+                  - ReadWriteOnce
+              resources:
+                  requests:
+                      storage: 200Mi

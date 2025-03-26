@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.zookeeper.configMap }}
+    namespace: {{ .Values.kafka.namespace }}
+data:
+    ZOOKEEPER_CLIENT_PORT: {{ .Values.zookeeper.port | quote }}
+    ZOOKEEPER_TICK_TIME: {{ .Values.zookeeper.kickTime | quote }}
+    ZOOKEEPER_DATA_DIR: {{ .Values.zookeeper.mountDataPath | quote }}
+    ZOOKEEPER_LOG_DIR: {{ .Values.zookeeper.mountLogPath | quote }}
+    ZOOKEEPER_SERVER_ID: "1"

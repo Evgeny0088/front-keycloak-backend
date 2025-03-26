@@ -8,5 +8,8 @@ kafka:
 zookeeper:
     name: zookeeper
     service: zookeeper-service
+    configMap: zookeeper-config-map
     port: 2181
     kickTime: 2000
+    mountDataPath: /var/lib/zookeeper/data
+    mountLogPath: /var/lib/zookeeper/log
