@@ -4,3 +4,8 @@ description: kafka chart
 type: application
 version: 1.0.0
 kubeVersion: ">= 1.20.0-0"
+dependencies:
+    -   name: helm-kafka-certs
+        version: 1.0.0
+        repository: "file://./charts/helm-kafka-certs"
+        condition: false

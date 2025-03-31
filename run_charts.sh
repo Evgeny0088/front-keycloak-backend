@@ -2,6 +2,7 @@
 
 # enable ingress if required
 minikube addons enable ingress && \
+minikube addons enable metrics-server && \
 kubectl -n ingress-nginx rollout status deployment.apps/ingress-nginx-controller
 
 # install backend-ns if required
@@ -162,7 +163,7 @@ helm upgrade --install \
  helm-grafana-ingress \
  ./helm/backend-chart/charts/helm-grafana-loki
 
-kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
+#kubectl create ingress grafana-ingress -n monitoring -f ./helm/backend-chart/charts/helm-grafana-loki/templates/ingress.yaml
 
 # install cadadvisor
 helm upgrade --install \
@@ -186,10 +187,10 @@ helm upgrade --install \
 helm-kube-state-metrics \
 ./helm/backend-chart/charts/helm-kube-state-metrics
 
-# install kafka cluster
+# install certificates for kafka broker/clients and kafka cluster
 helm upgrade --install \
  --atomic \
- --timeout 5m \
+ --timeout 30m \
  --wait \
  --wait-for-jobs \
  --namespace backend-ns \
@@ -232,9 +233,10 @@ helm-kafka \
 # get file content from keycloak secret to keycloak.crt file before adding to keystore
 # add tls cert for keycloak if required
 
-#kubectl get secret keycloak-cert-ca-secret -n keycloak-ns -o jsonpath='{.data.tls\.crt}' | base64 --decode > ./local/keycloak.crt && \
-#sudo keytool -import -alias keycloak_crt -file ./local/keycloak.crt -keystore /usr/lib/jvm/jdk-17.0.1/lib/security/cacerts -storepass changeit -noprompt && \
-#openssl x509 -in ./local/keycloak.crt -text -noout
+kubectl get secret keycloak-cert-ca-secret -n keycloak-ns -o jsonpath='{.data.tls\.crt}' | base64 --decode > ./local/keycloak.crt && \
+sudo keytool -import -alias keycloak_crt -file ./local/keycloak.crt -keystore /usr/lib/jvm/jdk-17.0.1/lib/security/cacerts -storepass changeit -noprompt && \
+openssl x509 -in ./local/keycloak.crt -text -noout
+# keytool -printcert -v -file selfserver.crt
 
  # verify if cert exists
 #sudo keytool -list -keystore /usr/lib/jvm/jdk-17.0.1/lib/security/cacerts -alias keycloak_crt -storepass changeit -noprompt

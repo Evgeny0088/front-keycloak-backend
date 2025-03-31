@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+    name: kafka-client-cert
+    namespace: {{ .Values.kafka.namespace }}
+spec:
+    isCA: false
+    duration: 10000h
+    renewBefore: 360h
+    commonName: "kafka-client-security"
+    dnsNames:
+        - "*.{{ .Values.kafka.namespace }}.svc.cluster.local"
+        - "*.application-ns.svc.cluster.local"
+    ipAddresses:
+        - 127.0.0.1
+    secretName: {{ .Values.kafka.clientSecret }}
+    privateKey:
+        algorithm: RSA
+        encoding: PKCS1
+        size: 4096
+    issuerRef:
+        name: {{ .Values.ssl.caIssuerName }}
+        kind: ClusterIssuer
+        group: cert-manager.io

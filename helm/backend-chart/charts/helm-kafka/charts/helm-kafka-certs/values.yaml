@@ -1,0 +1,11 @@
+ssl:
+    jobName: kafka-certs-job
+    image: bitnami/kubectl:1.32
+    caSecretName: root-ca-secret
+    caIssuerName: kafka-certificate-issuer
+
+kafka:
+    namespace: kafka-ns
+    brokerSecret: kafka-broker-ca-secret
+    clientSecret: kafka-client-ca-secret
+

@@ -7,10 +7,12 @@ metadata:
     namespace: {{ .Values.kafka.namespace }}
 spec:
     ports:
-        - name: kafka-port
-          port: 9092
-          targetPort: 9092
-          protocol: TCP
+        - name: internal
+          port: 29092
+          targetPort: 29092
+        - name: external
+          port: 30092
+          targetPort: 9093
     selector:
         app: {{ .Values.kafka.name }}
     clusterIP: None
@@ -34,12 +36,48 @@ spec:
             labels:
                 app: {{ .Values.kafka.name }}
         spec:
+            volumes:
+                -   name: stores
+                    secret:
+                        secretName: kafka-store-secret
+                        items:
+                            - key: broker-keystore.jks
+                              path: stores/broker-keystore.jks
+                            - key: broker-truststore.jks
+                              path: stores/broker-truststore.jks
             containers:
                 - name: {{ .Values.kafka.service }}
                   image: 'confluentinc/cp-kafka:7.0.0'
                   imagePullPolicy: IfNotPresent
                   ports:
-                      - containerPort: 9092
+                      - containerPort: 29092
+                      - containerPort: 9093
+                  volumeMounts:
+                      -   mountPath: /home/appuser/certs
+                          name: stores
+                          readOnly: true
+                  env:
+                      - name: KAFKA_SSL_KEYSTORE_LOCATION
+                        value: /home/appuser/certs/stores/broker-keystore.jks
+                      - name: KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
+                        value: ""
+                      - name: KAFKA_SSL_TRUSTSTORE_LOCATION
+                        value: /home/appuser/certs/stores/broker-truststore.jks
+                      - name: KAFKA_SSL_KEYSTORE_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: kafka-store-passwords
+                                key: broker-store-pwd
+                      - name: KAFKA_SSL_TRUSTSTORE_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: kafka-store-passwords
+                                key: broker-store-pwd
+                      - name: KAFKA_SSL_KEY_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: kafka-store-passwords
+                                key: key-store-pwd
                   envFrom:
                       - configMapRef:
                             name: {{ .Values.kafka.configMap }}

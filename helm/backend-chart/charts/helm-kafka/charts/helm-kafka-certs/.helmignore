@@ -21,3 +21,8 @@
 .idea/
 *.tmproj
 .vscode/
+
+templates/job.yaml
+templates/kafka-broker-certificate.yaml
+templates/kafka-client-certificate.yaml
+templates/kafka-issuer.yaml
