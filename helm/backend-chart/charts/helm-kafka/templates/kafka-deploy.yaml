@@ -59,8 +59,6 @@ spec:
                   env:
                       - name: KAFKA_SSL_KEYSTORE_LOCATION
                         value: /home/appuser/certs/stores/broker-keystore.jks
-                      - name: KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
-                        value: ""
                       - name: KAFKA_SSL_TRUSTSTORE_LOCATION
                         value: /home/appuser/certs/stores/broker-truststore.jks
                       - name: KAFKA_SSL_KEYSTORE_PASSWORD
